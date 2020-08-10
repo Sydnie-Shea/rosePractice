@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Chat App</title>
+  <script defer src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <script defer src="script.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    #message-container {
+      width: 80%;
+      max-width: 1200px;
+    }
+
+    #message-container div {
+      background-color: #CCC;
+      padding: 5px;
+    }
+
+    #message-container div:nth-child(2n) {
+      background-color: #FFF;
+    }
+
+    #send-container {
+      position: fixed;
+      padding-bottom: 30px;
+      bottom: 0;
+      background-color: white;
+      max-width: 1200px;
+      width: 80%;
+      display: flex;
+    }
+
+    #message-input {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="message-container"></div>
+  <button id="start">Start</button>
+  <button id="rose1">Rose</button>
+  <button id="rose2">Rose</button>
+  <button id="rose3">Rose</button>
+  <button id="skull">Skull</button>
+  <form>
+    <input type="text" id="bet-input">
+  </form>
+  <button id="bet">Bet</button>
+  <button id="pass">Pass</button>
+  <div id="playerbuttons">
+    <button id="player1">player1</button>
+    <button id="player2">player1</button>
+    <button id="player3">player1</button>
+    <button id="player4">player1</button>
+    <button id="player5">player1</button>
+    <button id="player6">player1</button>
+    <button id="player7">player1</button>
+    <button id="player8">player1</button>
+    <button id="player9">player1</button>
+  </div>
+</body>
+</html>
