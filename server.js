@@ -4,22 +4,20 @@ const Game = require('./game.js');
 const io = require('socket.io')(3000);
 const users = {}
 const game = new Game();
-const players = [];
 io.on('connection', socket => {
     socket.on('new-user', name => {
-        var player = new Player(name, socket.id)
-        users[socket.id] = player;
-        players.push(player); 
+        users[socket.id] = name;
+        game.addPlayer(socket.id, name);
         socket.broadcast.emit('user-connected', name);
     });
 
     socket.on('disconnect', name => {
-        socket.broadcast.emit('user-disconnected', users[socket.id].getName());
+        game.removePlayer(socket.id);
+        socket.broadcast.emit('user-disconnected', users[socket.id]);
         delete users[socket.id];
     });
 
     socket.on('start',() => {
-        game.start(players);
         io.sockets.emit('started');
         var player = game.getCurrentPlayer();
         var turnInfo = {

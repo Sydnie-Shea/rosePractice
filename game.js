@@ -1,11 +1,31 @@
+const Player = require("./player");
+
 class Game {
-    start(p) {
+    constructor() {
         this.currentPlayer = 0;
-        this.stillIn = p;
-        this.players = p;
+        this.stillIn = [];
+        this.players = {};
         this.cardsPlayed = 0;
         this.betPlayer = "";
         this.currentBet = 0;
+    }
+
+    addPlayer(sid, name) {
+        console.log(sid);
+        console.log(name);
+        var p =new Player(name, sid);
+        this.players[sid] = p;
+        this.stillIn.push(p);
+    }
+
+    removePlayer(sid) {
+        var p = this.players[sid];
+        delete this.players[sid];
+        var index = this.stillIn.indexOf(p);
+        if (index > -1) {
+            this.stillIn.splice(index, 1);
+        }
+        return p;
     }
 
     getCurrentPlayer() {

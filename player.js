@@ -1,6 +1,6 @@
 class Player {
     
-    constructor(nameOfPlayer, sid, numOfPlayers) {
+    constructor(nameOfPlayer, sid) {
         this.name = nameOfPlayer;
         this.socketId = sid;
         //this.listOfColors = ["blue", "red", "green", "pink", "pruple"];
