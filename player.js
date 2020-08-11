@@ -77,6 +77,12 @@ class Player {
     getHowManyPlayed() {
         return this.played.length;
     }
+    getPoints() {
+        return this.points;
+    }
+    getWins() {
+        return this.wins();
+    }
 
 }
 

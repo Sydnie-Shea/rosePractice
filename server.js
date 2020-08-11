@@ -32,7 +32,7 @@ io.on('connection', socket => {
 
     socket.on('card-choosen-play', index=>{
         var player = game.getCurrentPlayer();
-        game.makePlay(player, index);
+        game.makePlay(socket.id, index);
         player = game.getCurrentPlayer();
         var turnInfo = {
             'player': player,
@@ -47,7 +47,7 @@ io.on('connection', socket => {
     
     socket.on('bet-made', bet=> {
         var player = game.getCurrentPlayer();
-        var bet = game.makeBet(player, bet);
+        var bet = game.makeBet(socket.id, bet);
         if (bet > 0)
         {
             socket.broadcast.emit('message', `${player.getName()} bet ${bet} cards`);
@@ -78,7 +78,7 @@ io.on('connection', socket => {
 
     socket.on('passing', () => {
         var player = game.getCurrentPlayer();
-        left = game.pass(player);
+        left = game.pass(socket.id);
         socket.broadcast.emit('message', `${player.getName()} passed`);
         if (!left) {
             player = game.getCurrentPlayer();
@@ -90,7 +90,6 @@ io.on('connection', socket => {
             io.sockets.emit('make-bet', turnInfo);
         } else {
             player = game.getCurrentPlayer();
-            console.log(player);
             var turnInfo = {
                 'player': player,
                 'name': player.getName(),
@@ -101,15 +100,11 @@ io.on('connection', socket => {
         }
     });
     socket.on('reveal-mine', () => {
-        console.log("revealing mine");
-        var player = users[socket.id]
-        var cards = player.getHowManyPlayed();
+        var cards = game.getHowManyPlayed(socket.id);
         var allSafe = true;
-        console.log(cards);
         for (i = 0; i < cards; i++) {
-            console.log("apear 3 times")
-            card = game.revealCards(player, player);
-            io.sockets.emit('message', `${player.getName()} had a ${card}`);
+            card = game.revealCards(socket.id, socket.id);
+            io.sockets.emit('message', `${game.getName(socket.id)} had a ${card}`);
             if (card == "rose") {
                 game.adjustBet();
             } else {
@@ -121,13 +116,12 @@ io.on('connection', socket => {
         }
         //if all safe continue game asking other players
         if (allSafe) {
-            console.log("Waiting intelligently");
             roundInfo = {
                 'sids': game.getSids(),
                 'names': game.getNames(),
-                'left': game.getCardsLeft()
+                'left': game.getCardsLeft(),
+                'betterSid': game.getCurrentBetSid()
             }
-
             io.sockets.emit('choose-another-card', roundInfo);
 
         }
@@ -135,6 +129,35 @@ io.on('connection', socket => {
         //if not all safe do nothing
     })
     socket.on('reveal-card', sid => {
-        console.log('click the cards');
+        card = game.revealCards(socket.id, sid);
+        if (card == "rose") {
+            game.adjustBet();
+            if (game.getCurrentBet() == 0) {
+                points = game.winRound(socket.id);
+                //send info about points
+                //players, and current scores
+                //announce winner globally and adjust scores
+                //Than deal 
+                if (points == 2) {
+                    //start new game
+                } else {
+                    //start new round
+                }
+                //run win scenario
+                //winner
+                console.log("winner");
+            } else {
+                roundInfo = {
+                    'sids': game.getSids(),
+                    'names': game.getNames(),
+                    'left': game.getCardsLeft(),
+                    'betterSid': game.getCurrentBetSid()
+                }
+                io.sockets.emit('choose-another-card', roundInfo);
+            }
+        } else {
+            console.log("end game")
+            //end game with loss
+        }
     })
 });

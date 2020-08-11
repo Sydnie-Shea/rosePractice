@@ -1,7 +1,9 @@
 const socket = io('http://localhost:3000');
 
-
-const messageContainer = document.getElementById('message-container')
+const totalScores = document.getElementById('total-scores');
+const roundScores = document.getElementById('round-scores');
+const scoreToggleButton = document.getElementById('toggle-scores');
+const messageContainer = document.getElementById('message-container');
 const startButton = document.getElementById('start');
 const rose1Button = document.getElementById('rose1');
 const rose2Button = document.getElementById('rose2');
@@ -40,6 +42,25 @@ for (i=0; i<players.length; i++) {
 betMessage.style.display = "none";
 betButton.style.display = "none";
 passButton.style.display = "none";
+roundScores.style.display = "none";
+totalScores.style.display = "none";
+scoreToggleButton.style.display = "none";
+var total = true;
+
+
+scoreToggleButton.addEventListener('click', button => {
+    if (total) {
+        roundScores.style.display = "block";
+        totalScores.style.display = "none";
+        scoreToggleButton.innerText = "Show Total Scores"
+        total = false;
+    } else {
+        roundScores.style.display = "none";
+        totalScores.style.display = "block";
+        scoreToggleButton.innerText = "Show Round Scores"
+        total = true;
+    }
+})
 
 
 const name = prompt("What is your name?");
@@ -47,12 +68,22 @@ appendMessage('You joined');
 socket.emit('new-user', name);
 var playing = true;
 
+var totalScoresText = `${name} - 0`;
+var roundScoresText = `${name} - 0`;
+totalScores.innerText = totalScoresText;
+roundScores.innerText = roundScoresText;
+
 socket.on('message', mes => {
     appendMessage(mes);
 })
 
 socket.on('user-connected',name  => {
     appendMessage(name + ' connected');
+    totalScoresText += `\n${name} - 0`
+    roundScoresText += `\n${name} - 0`
+    totalScores.innerText = totalScoresText;
+    roundScores.innerText = roundScoresText;
+
 });
 
 socket.on('user-disconnected', name => {
@@ -96,18 +127,16 @@ socket.on('decide', turnInfo => {
     }
 })
 socket.on('choose-another-card', turnInfo => {
-    console.log("getting to choose another card");
     var playerSids = turnInfo['sids'];
     var playerNames = turnInfo['names'];
     var playerLeft = turnInfo['left'];
-    console.log(playerSids);
-    console.log(playerNames);
-    console.log(playerLeft);
-    for (i = 0; i<playerSids.length; i++) {
-        if (playerLeft[i]>0) {
-            matchPlayers[players] = playerSids[i];
-            players[i].innerText = `${playerNames[i]} has ${playerLeft[i]} cards left`;
-            players[i].style.display = "block";
+    if (socket.id == turnInfo['betterSid']) {
+        for (i = 0; i<playerSids.length; i++) {
+            if (playerLeft[i]>0) {
+                matchPlayers[players[i]] = playerSids[i];
+                players[i].innerText = `${playerNames[i]} has ${playerLeft[i]} cards left`;
+                players[i].style.display = "block";
+            }
         }
     }
 })
